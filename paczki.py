@@ -20,8 +20,13 @@ for i in range(n):
         try:
             kg = float(input(f"Waga {i+1}: "))
             
-            # Zabezpieczenie 3: Sprawdzenie zakresu wagi
-            if kg < 1 or kg > 10:
+            # Zabezpieczenie 3: Natychmiastowe zakończenie programu dla wagi > 10 kg
+            if kg > 10:
+                print("BŁĄD: Paczka przekracza 10 kg! Program zostaje zakończony.")
+                exit()
+            
+            # Zabezpieczenie 4: Sprawdzenie minimalnej wagi
+            if kg < 1:
                 print("Waga musi być w zakresie 1-10 kg! Spróbuj ponownie.")
                 continue
             break
