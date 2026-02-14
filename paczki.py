@@ -1,58 +1,67 @@
 print("=== ŁADOWARKA PACZEK ===")
 
-# Zabezpieczenie 1: Poprawne wprowadzenie liczby paczek
+# Pobranie liczby elementów
 while True:
     try:
-        n = int(input("Ile paczek? "))
+        n = int(input("Ilość elementów: "))
         if n <= 0:
-            print("Liczba paczek musi być większa od 0!")
+            print("Liczba musi być większa od 0!")
             continue
         break
     except ValueError:
         print("To musi być liczba całkowita!")
 
-w = 0
-p = []
+aktualna_paczka = []
+paczki = []
+suma_wszystkich_kg = 0
 
+# Pobieranie wag elementów
 for i in range(n):
-    # Zabezpieczenie 2: Poprawne wprowadzenie wagi
-    while True:
-        try:
-            kg = float(input(f"Waga {i+1}: "))
-            
-            # Zabezpieczenie 3: Natychmiastowe zakończenie programu dla wagi > 10 kg
-            if kg > 10:
-                print("BŁĄD: Paczka przekracza 10 kg! Program zostaje zakończony.")
-                exit()
-            
-            # Zabezpieczenie 4: Sprawdzenie minimalnej wagi
-            if kg < 1:
-                print("Waga musi być w zakresie 1-10 kg! Spróbuj ponownie.")
-                continue
+    try:
+        kg = float(input(f"Waga elementu {i+1}: "))
+
+        # Sprawdzenie zakresu 1–10 kg
+        if kg < 1 or kg > 10:
+            print("Podano wagę spoza zakresu 1–10 kg. Zakończenie dodawania.")
             break
-        except ValueError:
-            print("To musi być liczba!")
 
-    # Logika ładowania paczek
-    if w + kg > 20:
-        p.append(w)
-        w = kg
-    else:
-        w += kg
+        # Jeśli przekroczy 20 kg → zamknij paczkę
+        if sum(aktualna_paczka) + kg > 20:
+            paczki.append(aktualna_paczka)
+            aktualna_paczka = [kg]
+        else:
+            aktualna_paczka.append(kg)
 
-# Dodanie ostatniej paczki jeśli istnieje
-if w > 0:
-    p.append(w)
+        suma_wszystkich_kg += kg
 
-# Wyświetl wyniki tylko jeśli są paczki
-if len(p) > 0:
-    print(f"\nWysłano paczek: {len(p)}")
-    print(f"Waga całkowita: {sum(p):.2f} kg")
-    print(f"Puste kilogramy: {len(p)*20 - sum(p):.2f} kg")
-    
-    if p:
-        pustki = [20 - x for x in p]
-        nr = pustki.index(max(pustki)) + 1
-        print(f"Najwięcej pustych: paczka #{nr} ({max(pustki):.2f} kg)")
+    except ValueError:
+        print("To musi być liczba!")
+        break
+
+# Dodanie ostatniej paczki
+if aktualna_paczka:
+    paczki.append(aktualna_paczka)
+
+# PODSUMOWANIE
+if paczki:
+    liczba_paczek = len(paczki)
+    suma_pustych = liczba_paczek * 20 - suma_wszystkich_kg
+
+    # Obliczanie pustych kg dla każdej paczki
+    puste_w_paczkach = [20 - sum(p) for p in paczki]
+    max_pustych = max(puste_w_paczkach)
+    nr_max = puste_w_paczkach.index(max_pustych) + 1
+
+    print("\n=== PODSUMOWANIE ===")
+    print(f"Wysłano {liczba_paczek} paczkę/paczki:", end=" ")
+
+    opis = []
+    for p in paczki:
+        opis.append("(" + "+".join(str(int(x)) for x in p) + ")")
+
+    print(", ".join(opis))
+    print(f"Wysłano {int(suma_wszystkich_kg)} kg")
+    print(f"Suma pustych kilogramów: {int(suma_pustych)}kg")
+    print(f"Najwięcej pustych kilogramów ma paczka {nr_max} ({int(max_pustych)}kg)")
 else:
     print("\nNie załadowano żadnych paczek.")
